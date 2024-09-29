@@ -9,12 +9,17 @@ class Barang extends Model
 {
     use HasFactory;
 
-    protected $table = 'barang'; // Nama tabel
-    protected $primaryKey = 'KODE'; // Primary key
-    public $incrementing = false; // Primary key bukan auto increment
-    protected $keyType = 'string'; // Tipe data primary key adalah string
-    public $timestamps = false; // Nonaktifkan timestamps otomatis
+    protected $fillable = ['nama', 'kategori', 'harga', 'kode'];
 
-    // Kolom yang bisa diisi (mass assignable)
-    protected $fillable = ['KODE', 'NAMA', 'KATEGORI', 'HARGA'];
+    public static function boot()
+    {
+        parent::boot();
+
+        // Event sebelum data barang dibuat
+        static::creating(function ($model) {
+            // Buat kode barang berdasarkan id yang akan dibuat
+            $latestId = self::max('id') + 1;
+            $model->kode = 'BRG_' . $latestId;
+        });
+    }
 }

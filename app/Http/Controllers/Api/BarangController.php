@@ -8,61 +8,46 @@ use Illuminate\Http\Request;
 
 class BarangController extends Controller
 {
-    // Mendapatkan semua data barang
     public function index()
     {
-        $barangs = Barang::all();
-        return response()->json($barangs, 200);
+        return response()->json(Barang::all());
     }
 
-    // Mendapatkan data barang berdasarkan KODE
-    public function show($id)
-    {
-        $barang = Barang::find($id);
-        if ($barang) {
-            return response()->json($barang, 200);
-        } else {
-            return response()->json(['message' => 'Data barang tidak ditemukan'], 404);
-        }
-    }
-
-    // Menambahkan data barang baru
     public function store(Request $request)
     {
-        $request->validate([
-            'KODE' => 'required|unique:barang|max:300',
-            'NAMA' => 'required|string|max:50',
-            'KATEGORI' => 'required|string|max:20',
-            'HARGA' => 'required|integer'
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'kategori' => 'required|string|max:255',
+            'harga' => 'required|integer',
         ]);
 
-        $barang = Barang::create($request->all());
+        $barang = Barang::create($validated);
         return response()->json($barang, 201);
     }
 
-    // Mengupdate data barang berdasarkan KODE
+    public function show($id)
+    {
+        $barang = Barang::findOrFail($id);
+        return response()->json($barang);
+    }
+
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'NAMA' => 'sometimes|required|string|max:50',
-            'KATEGORI' => 'sometimes|required|string|max:20',
-            'HARGA' => 'sometimes|required|integer'
+        $validated = $request->validate([
+            'nama' => 'sometimes|required|string|max:255',
+            'kategori' => 'sometimes|required|string|max:255',
+            'harga' => 'sometimes|required|integer',
         ]);
 
         $barang = Barang::findOrFail($id);
-        $barang->update($request->all());
-        return response()->json($barang, 200);
+        $barang->update($validated);
+        return response()->json($barang);
     }
 
-    // Menghapus data barang berdasarkan KODE
     public function destroy($id)
     {
-        $barang = Barang::find($id);
-        if ($barang) {
-            $barang->delete();
-            return response()->json(['message' => 'Data barang berhasil dihapus'], 200);
-        } else {
-            return response()->json(['message' => 'Data barang tidak ditemukan'], 404);
-        }
+        $barang = Barang::findOrFail($id);
+        $barang->delete();
+        return response()->json(['message' => 'Barang deleted successfully']);
     }
 }

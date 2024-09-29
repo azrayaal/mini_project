@@ -5,17 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 class Pelanggan extends Model
 {
     use HasFactory;
 
-    protected $table = 'pelanggan'; // Nama tabel yang benar
-    protected $primaryKey = 'ID_PELANGGAN'; // Primary key di tabel
-    public $incrementing = false; // Primary key bukan auto increment
-    protected $keyType = 'string'; // Tipe data primary key adalah string
-    public $timestamps = false; // Nonaktifkan timestamps
+    protected $fillable = ['nama', 'domisili', 'jenis_kelamin', 'id_pelanggan'];
 
-    // Kolom yang bisa diisi (mass assignable)
-    protected $fillable = ['ID_PELANGGAN', 'NAMA', 'DOMISILI', 'JENIS_KELAMIN'];
+    public static function boot()
+    {
+        parent::boot();
+
+        // Event sebelum data pelanggan dibuat
+        static::creating(function ($model) {
+            // Buat id_pelanggan berdasarkan id yang akan dibuat
+            $latestId = self::max('id') + 1;
+            $model->id_pelanggan = 'PELANGGAN_' . $latestId;
+        });
+    }
 }

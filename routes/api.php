@@ -1,28 +1,23 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\PenjualanController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PelangganController;
+use App\Http\Controllers\Api\ItemPenjualanController;
+
+// Rute resource untuk Pelanggan
+Route::resource('pelanggan', PelangganController::class);
+
+// Rute resource untuk Penjualan
+Route::resource('penjualan', PenjualanController::class);
+
+// Rute resource untuk Barang
+Route::resource('barang', BarangController::class);
 
 
-// Pelanggan
-Route::get('/pelanggan', [PelangganController::class, 'index']);
-Route::get('/pelanggan/{id}', [PelangganController::class, 'show']);
-Route::post('/pelanggan', [PelangganController::class, 'store']);
-Route::put('/pelanggan/{id}', [PelangganController::class, 'update']);
-Route::delete('/pelanggan/{id}', [PelangganController::class, 'destroy']);
-
-// Penjualan
-Route::get('/penjualan', [PenjualanController::class, 'index']);
-Route::get('/penjualan/{id}', [PenjualanController::class, 'show']);
-Route::post('/penjualan', [PenjualanController::class, 'store']);
-Route::put('/penjualan/{id}', [PenjualanController::class, 'update']);
-Route::delete('/penjualan/{id}', [PenjualanController::class, 'destroy']);
-
-// barang
-Route::get('/barang', [BarangController::class, 'index']);
-Route::get('/barang/{id}', [BarangController::class, 'show']);
-Route::post('/barang', [BarangController::class, 'store']);
-Route::put('/barang/{id}', [BarangController::class, 'update']);
-Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+// Rute resource untuk Item Penjualan
+// Rute khusus untuk mendapatkan item penjualan berdasarkan nota
+Route::get('item-penjualan/nota/{nota}', [ItemPenjualanController::class, 'getItemsByNota']);
+Route::resource('item-penjualan', ItemPenjualanController::class);
+Route::post('/penjualan/{idNota}/items', [ItemPenjualanController::class, 'addItem']);
