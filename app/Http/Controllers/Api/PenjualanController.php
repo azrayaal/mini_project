@@ -15,16 +15,21 @@ class PenjualanController extends Controller
     public function index()
     {
         try {
-            Log::info('Mengambil semua data penjualan');
             $penjualans = Penjualan::with(['pelanggan', 'itemPenjualans.barang'])->get();
 
             $data = $penjualans->map(function ($penjualan) {
                 // Jika subtotal adalah 0, hitung ulang dari item_penjualans
-                if ($penjualan->subtotal == 0) {
-                    $penjualan->subtotal = $penjualan->itemPenjualans->sum(function ($item) {
-                        return $item->qty * $item->barang->harga;
-                    });
-                }
+                // if ($penjualan->subtotal == 0) {
+                //     $penjualan->subtotal = $penjualan->itemPenjualans->sum(function ($item) {
+                //         return $item->qty * $item->barang->harga;
+                //     });
+                // }
+
+                $subtotal = $penjualan->itemPenjualans->sum(function ($item) {
+                    return $item->qty * $item->barang->harga;
+                });
+
+                $penjualan->update(['subtotal' => $subtotal]);
                 return [
                     'id' => $penjualan->id,
                     'nota' => $penjualan->id_nota,
@@ -43,7 +48,10 @@ class PenjualanController extends Controller
                             'total_harga' => $item->qty * $item->barang->harga,
                         ];
                     }),
-                    'subtotal' => $penjualan->subtotal,
+                    // 'subtotal' => $penjualan->subtotal,
+
+                    'subtotal' => $subtotal,
+
                 ];
             });
 
